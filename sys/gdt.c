@@ -69,20 +69,20 @@ static struct gdtr_t gdtr = { sizeof(gdt), (uint64_t)gdt };
 static struct tss_t tss;
 
 void _x86_64_asm_lgdt(struct gdtr_t *gdtr, uint64_t cs_idx, uint64_t ds_idx);
-void _x86_64_asm_ltr(uint64_t tss_idx);
+void _x86_64_asm_ltr();
 void init_gdt() {
-  struct sys_segment_descriptor *sd = (struct sys_segment_descriptor*)&gdt[6]; // 7th&8th entry in GDT
+  _x86_64_asm_lgdt(&gdtr, 8, 16);
+  struct sys_segment_descriptor *sd = (struct sys_segment_descriptor*)&gdt[5]; // 7th&8th entry in GDT
   sd->sd_lolimit = sizeof(struct tss_t) - 1;
-  sd->sd_lobase = ((uint64_t)&tss);
+  sd->sd_lobase = ((uint64_t)&tss) & 0xFFFFFFUL;
   sd->sd_type = 9; // TSS
   sd->sd_dpl = 0;
   sd->sd_p = 1;
   sd->sd_hilimit = 0;
   sd->sd_gran = 0;
   sd->sd_hibase = ((uint64_t)&tss) >> 24;
-
-  _x86_64_asm_lgdt(&gdtr, 8, 16);
-  _x86_64_asm_ltr(0x30);
+		__asm__ __volatile__("movq %%rsp, %[tss_rsp0];" : [tss_rsp0] "=m" (tss.rsp0));
+  _x86_64_asm_ltr();
 }
 
 void set_tss_rsp(void *rsp) {

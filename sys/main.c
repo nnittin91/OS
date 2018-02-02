@@ -1,7 +1,7 @@
 #include <sys/defs.h>
 #include <sys/gdt.h>
 #include <sys/kprintf.h>
-#include <sys/tarfs.h>
+#include <sys/tar_file_system_help.h>
 #include <sys/ahci.h>
 
 #define INITIAL_STACK_SIZE 4096

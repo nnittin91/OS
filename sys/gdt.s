@@ -34,5 +34,6 @@ _x86_64_asm_lgdt:
 #  parameter 1: index of TSS in GDT
 .global _x86_64_asm_ltr
 _x86_64_asm_ltr:
-  ltr %di
+		mov $0x2b,%ax
+  ltr %ax
   retq

@@ -1,7 +1,13 @@
 #ifndef _ELF64_H
 #define _ELF64_H
 
+#include<sys/defs.h>
+#include<sys/process_memory_help.h>
+
 #define EI_NIDENT 16
+#define MAX_ARGS 10
+#define ARG_MAX_SZ 100
+static char gbl_args_array[MAX_ARGS][ARG_MAX_SZ];
 
 typedef uint64_t Elf64_Addr;
 typedef uint16_t Elf64_Half;
@@ -39,5 +45,11 @@ typedef struct {
   Elf64_Xword   p_memsz;
   Elf64_Xword   p_align;
 } Elf64_Phdr;
+
+struct process_control_block* initiate_elf_process(char* binaryName,char* args[]);
+void copy_arg_to_global_arg_array(int *no_of_args, char* target[], char * binaryName);
+void push_args_to_user_stack(struct process_control_block * proc,int no_of_args);
+struct process_control_block * load_elf_headers(char*args[], char*binaryName,process_control_block* current_process, Elf64_Ehdr* hdr);
+
 
 #endif
